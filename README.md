@@ -1,5 +1,4 @@
-## Just a todo list to learn ReactJs :)
-
+## Just a todo list
 
 - [ ] Split the application into components
 - [ ] Using Props to pass data from parent => child and lift-up data from child => parent
