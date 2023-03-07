@@ -1,35 +1,61 @@
 import { Button, Container, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import TodoAdd from './components/TodoAdd';
 import TodoList from './components/TodoList';
 
 function App() {
   const [todos, setTodos] = useState([]);
   const [completedHidden, setCompletedHidden] = useState(false);
-  const handleAdd = (title) => {
-    const newTodo = { id: new Date().getTime(), title, isArchived: false };
-    setTodos([newTodo, ...todos]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await axios.get('http://localhost:3005/todos');
+
+      setTodos(data);
+    };
+    fetchData();
+  }, []);
+
+  const handleAdd = async (title) => {
+    const { data } = await axios.post('http://localhost:3005/todos', {
+      title,
+      isArchived: false,
+    });
+
+    setTodos([data, ...todos]);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+    await axios.delete(`http://localhost:3005/todos/${id}`);
+
     setTodos(todos.filter((t) => t.id !== id));
   };
 
-  const toggleArchive = (id) => {
+  const toggleArchive = async (id) => {
+    const todo = todos.find((t) => t.id === id);
+    await axios.put(`http://localhost:3005/todos/${id}`, {
+      ...todo,
+      isArchived: !todo.isArchived,
+    });
+
     setTodos(
       todos.map((t) => (t.id === id ? { ...t, isArchived: !t.isArchived } : t))
     );
   };
 
-  const handleEdit = (id, title) => {
+  const handleEdit = async (id, title) => {
+    const todo = todos.find((t) => t.id === id);
+    await axios.put(`http://localhost:3005/todos/${id}`, {
+      ...todo,
+      title: title,
+    });
     setTodos(todos.map((t) => (t.id === id ? { ...t, title } : t)));
   };
 
-  const finalList = completedHidden
-    ? todos.filter((todo) => !todo.isArchived)
-    : todos;
-  const completedCount = todos.length - finalList.length;
+  const remainList = todos.filter((todo) => !todo.isArchived);
+  const completedCount = todos.length - remainList.length;
 
   return (
     <div>
@@ -50,7 +76,7 @@ function App() {
         <TodoList
           onDelete={handleDelete}
           toggleArchive={toggleArchive}
-          todos={finalList}
+          todos={completedHidden ? remainList : todos}
           onEdit={handleEdit}
         />
       </Container>
