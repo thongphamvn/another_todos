@@ -1,9 +1,11 @@
 import { Button, Paper, TextField } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import TodoContext from '../context/todo';
 
-function TodoAdd({ onSubmit }) {
+function TodoAdd() {
   const [value, setValue] = useState('');
+  const { handleAdd } = useContext(TodoContext);
 
   const handleChange = (event) => {
     setValue(event.target.value);
@@ -14,7 +16,7 @@ function TodoAdd({ onSubmit }) {
       return;
     }
 
-    onSubmit(value);
+    handleAdd(value);
     setValue('');
   };
 

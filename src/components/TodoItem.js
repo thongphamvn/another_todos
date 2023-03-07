@@ -3,11 +3,17 @@ import DeleteIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/EditOutlined';
 import { IconButton, Paper, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import TodoContext from '../context/todo';
 import TodoEdit from './TodoEdit';
 
-function TodoItem({ item, toggleArchive, onDelete, onEdit }) {
+function TodoItem({ item }) {
   const [isEdit, setIsEdit] = useState(false);
+  const {
+    handleEdit: onEdit,
+    handleDelete: onDelete,
+    toggleArchive,
+  } = useContext(TodoContext);
 
   const handleEdit = (value) => {
     onEdit(item.id, value);
